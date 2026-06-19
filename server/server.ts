@@ -5,6 +5,7 @@ import express, { json, Request, Response } from "express";
 import { readFile, unlink } from "fs/promises";
 import multer from "multer";
 import { PDFParse } from "pdf-parse";
+import { connectDB } from "./src/config/db";
 
 const app = express();
 
@@ -12,7 +13,7 @@ app.use(json());
 
 app.use(cors());
 
-_config();
+_config({quiet: true});
 
 const upload = multer({ dest: "uploads/" });
 
@@ -100,4 +101,5 @@ app.post(
   },
 );
 
+connectDB();
 app.listen(3000, () => console.log("Server is running on port 3000"));
