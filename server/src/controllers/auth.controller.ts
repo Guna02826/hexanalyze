@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
-import jwt from "jsonwebtoken";
 import User from "../models/User.model";
+import generateToken from "../utils/generateToken";
 
 export const registerUser = async (
   req: Request,
@@ -18,11 +18,10 @@ export const registerUser = async (
     const hashedPassword = await bcrypt.hash(password, 10);
     const userDetails = { name: name, email: email, password: hashedPassword };
     const user = await User.create(userDetails);
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET as string, {
-      expiresIn: "30d",
-    });
+    const token = generateToken(user.id);
     res.status(201).json({
       _id: user._id,
+      name: name,
       email: email,
       token: token,
     });
@@ -40,16 +39,11 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
     const validPassword = await bcrypt.compare(password, userExists.password);
 
     if (validPassword) {
-      const token = jwt.sign(
-        { id: userExists.id },
-        process.env.JWT_SECRET as string,
-        {
-          expiresIn: "30d",
-        },
-      );
+      const token = generateToken(userExists.id);
 
       res.status(200).json({
         _id: userExists.id,
+        name: userExists.name,
         email: userExists.email,
         token: token,
       });
