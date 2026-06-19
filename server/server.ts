@@ -6,6 +6,7 @@ import { readFile, unlink } from "fs/promises";
 import multer from "multer";
 import { PDFParse } from "pdf-parse";
 import { connectDB } from "./src/config/db";
+import router from "./src/routes/auth.routes";
 
 const app = express();
 
@@ -13,11 +14,13 @@ app.use(json());
 
 app.use(cors());
 
-_config({quiet: true});
+_config({ quiet: true });
 
 const upload = multer({ dest: "uploads/" });
 
 const ai = new GoogleGenAI({});
+
+app.use("/api/auth", router);
 
 app.get("/api/test", (req: Request, res: Response) => {
   res.send("The server is working.");
