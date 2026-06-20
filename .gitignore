@@ -1,6 +1,7 @@
 # Planning & Checklist Files
 project_scope.md
 task.md
+.agents/rules/do-not-touch-project-scope.md
 
 # Dependencies
 node_modules/
