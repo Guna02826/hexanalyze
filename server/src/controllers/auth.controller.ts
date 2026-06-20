@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
+import { AuthRequest } from "../middleware/auth.middleware";
 import User from "../models/User.model";
 import generateToken from "../utils/generateToken";
 
@@ -50,5 +51,24 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
     } else {
       res.status(400).json({ message: "Invalid Credentials!" });
     }
+  }
+};
+
+export const loginDemoUser = async (req: AuthRequest, res: Response) => {
+  req.body.email = "demo@aijobanalyzer.com";
+  req.body.password = "demoPassword123";
+
+  return loginUser(req, res);
+};
+
+export const getUserDetail = async (
+  req: AuthRequest,
+  res: Response,
+): Promise<void> => {
+  const user = req.user;
+  if (user) {
+    res.status(200).json(user);
+  } else {
+    res.status(400).json({ message: "User not found!" });
   }
 };
