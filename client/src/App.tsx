@@ -1,12 +1,35 @@
+import axios from "axios";
 import { useState } from "react";
 
 function App() {
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [jd, setJd] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [result, setResult] = useState(null);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(pdfFile, jd);
+    setIsLoading(true);
+    if (!pdfFile) {
+      window.alert("Attach the resume file ");
+    } else if (!jd) {
+      window.alert("No JD attached");
+    } else {
+      const formData = new FormData();
+      formData.append("resume", pdfFile);
+      formData.append("jobDescription", jd);
+      try {
+        const response = await axios.post(
+          `${import.meta.env.VITE_SERVER_URL}/analyze`,
+          formData,
+        );
+        setResult(response.data);
+      } catch (error) {
+        console.log((error as Error).message);
+      } finally {
+        setIsLoading(false);
+      }
+    }
   };
 
   return (
@@ -39,10 +62,19 @@ function App() {
             <button
               className="w-full py-4 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-400 hover:to-purple-400 text-white font-bold rounded-xl shadow-lg shadow-indigo-500/25 transition-all active:scale-[0.98]"
               type="submit"
+              disabled={isLoading}
             >
-              Analyze
+              {isLoading ? "Analyzing..." : "Analyze"}
             </button>
           </form>
+
+          {result && (
+            <div className="mt-8 p-4 bg-slate-950/50 border border-slate-800 rounded-xl">
+              <pre className="text-sm overflow-x-auto">
+                {JSON.stringify(result, null, 2)}
+              </pre>
+            </div>
+          )}
         </div>
       </div>
     </>
