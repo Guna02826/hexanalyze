@@ -7,11 +7,11 @@ import {
 } from "../controllers/auth.controller";
 import { protect } from "../middleware/auth.middleware";
 
-const router = express.Router();
+const authRouter = express.Router();
 
-router.post("/register", registerUser);
-router.post("/login", loginUser);
-router.get("/me", protect, getUserDetail);
-router.post("/demo-login", loginDemoUser);
+authRouter.post("/register", registerUser);
+authRouter.post("/login", loginUser);
+authRouter.get("/me", protect, getUserDetail);
+authRouter.post("/demo-login", loginDemoUser);
 
-export default router;
+export default authRouter;
