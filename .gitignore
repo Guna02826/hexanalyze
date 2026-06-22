@@ -5,18 +5,19 @@ task.md
 
 # Dependencies
 node_modules/
-backend/node_modules/
-frontend/node_modules/
+server/node_modules/
+client/node_modules/
 
 # Secrets
 .env
-backend/.env
-frontend/.env
+server/.env
+client/.env
 
 # Build outputs
-frontend/dist/
+client/dist/
+server/dist/
 
 # Temporary Uploads
-backend/uploads/
+server/uploads/
 task_max_speed.md
 demo_resume.pdf

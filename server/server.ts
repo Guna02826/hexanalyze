@@ -13,7 +13,13 @@ const app = express();
 
 app.use(json());
 
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  }),
+);
+
 
 app.use("/api/auth", authRoutes);
 app.use("/api/analyze", analysisRoutes);
@@ -23,4 +29,5 @@ app.get("/api/test", (req: Request, res: Response) => {
 });
 
 connectDB();
-app.listen(3000, () => console.log("Server is running on port 3000"));
+const PORT = process.env.PORT;
+app.listen(PORT, () => console.log("Server is running."));
