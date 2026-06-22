@@ -4,10 +4,10 @@ _config({ quiet: true });
 
 import express, { json, Request, Response } from "express";
 
-import { connectDB } from "./src/config/db";
+import { connectDB } from "./src/config/db.js";
 
-import analysisRoutes from "./src/routes/analysis.routes";
-import authRoutes from "./src/routes/auth.routes";
+import analysisRoutes from "./src/routes/analysis.routes.js";
+import authRoutes from "./src/routes/auth.routes.js";
 
 const app = express();
 

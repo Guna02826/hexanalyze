@@ -1,8 +1,8 @@
 import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
-import { AuthRequest } from "../middleware/auth.middleware";
-import User from "../models/User.model";
-import generateToken from "../utils/generateToken";
+import { AuthRequest } from "../middleware/auth.middleware.js";
+import User from "../models/User.model.js";
+import generateToken from "../utils/generateToken.js";
 
 export const registerUser = async (
   req: Request,

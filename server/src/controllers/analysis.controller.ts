@@ -1,9 +1,9 @@
 import { GoogleGenAI } from "@google/genai";
 import { Response } from "express";
 import { PDFParse } from "pdf-parse";
-import { AuthRequest } from "../middleware/auth.middleware";
-import Analysis from "../models/Analysis.model";
-import { uploadToCloudinary } from "../utils/cloudinary";
+import { AuthRequest } from "../middleware/auth.middleware.js";
+import Analysis from "../models/Analysis.model.js";
+import { uploadToCloudinary } from "../utils/cloudinary.js";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
