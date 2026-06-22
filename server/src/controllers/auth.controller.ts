@@ -10,15 +10,15 @@ export const registerUser = async (
 ): Promise<void> => {
   const { name, email, password } = req.body;
 
-  const userExists = await User.findOne({ email });
+  const existingUser = await User.findOne({ email });
 
-  if (userExists) {
+  if (existingUser) {
     res.status(400).json({ message: "User already Exists!" });
     return;
   } else {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const userDetails = { name: name, email: email, password: hashedPassword };
-    const user = await User.create(userDetails);
+    const newUserPayload = { name: name, email: email, password: hashedPassword };
+    const user = await User.create(newUserPayload);
     const token = generateToken(user.id);
     res.status(201).json({
       _id: user._id,
@@ -32,20 +32,20 @@ export const registerUser = async (
 export const loginUser = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
 
-  const userExists = await User.findOne({ email });
+  const existingUser = await User.findOne({ email });
 
-  if (!userExists) {
+  if (!existingUser) {
     res.status(400).json({ message: "Invalid Email!" });
   } else {
-    const validPassword = await bcrypt.compare(password, userExists.password);
+    const isPasswordValid = await bcrypt.compare(password, existingUser.password);
 
-    if (validPassword) {
-      const token = generateToken(userExists.id);
+    if (isPasswordValid) {
+      const token = generateToken(existingUser.id);
 
       res.status(200).json({
-        _id: userExists.id,
-        name: userExists.name,
-        email: userExists.email,
+        _id: existingUser.id,
+        name: existingUser.name,
+        email: existingUser.email,
         token: token,
       });
     } else {
@@ -61,7 +61,7 @@ export const loginDemoUser = async (req: AuthRequest, res: Response) => {
   return loginUser(req, res);
 };
 
-export const getUserDetail = async (
+export const getCurrentUser = async (
   req: AuthRequest,
   res: Response,
 ): Promise<void> => {

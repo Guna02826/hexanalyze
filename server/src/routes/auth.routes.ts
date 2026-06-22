@@ -1,17 +1,17 @@
 import express from "express";
 import {
-  getUserDetail,
+  getCurrentUser,
   loginDemoUser,
   loginUser,
   registerUser,
 } from "../controllers/auth.controller";
-import { protect } from "../middleware/auth.middleware";
+import { requireAuth } from "../middleware/auth.middleware";
 
-const authRouter = express.Router();
+const authRoutes = express.Router();
 
-authRouter.post("/register", registerUser);
-authRouter.post("/login", loginUser);
-authRouter.get("/me", protect, getUserDetail);
-authRouter.post("/demo-login", loginDemoUser);
+authRoutes.post("/register", registerUser);
+authRoutes.post("/login", loginUser);
+authRoutes.get("/me", requireAuth, getCurrentUser);
+authRoutes.post("/demo-login", loginDemoUser);
 
-export default authRouter;
+export default authRoutes;

@@ -26,8 +26,8 @@ export const analyzeResume = async (
     }
 
     const pdfParser = new PDFParse(new Uint8Array(req.file.buffer));
-    const data = await pdfParser.getText();
-    const resumeText = data.text;
+    const parsedPdfData = await pdfParser.getText();
+    const extractedResumeText = parsedPdfData.text;
 
     const resumeUrl = await uploadToCloudinary(req.file.buffer);
 
@@ -39,7 +39,7 @@ export const analyzeResume = async (
     const userPrompt = `
       Please compare the following resume against the job description.
       Resume:
-      ${resumeText}
+      ${extractedResumeText}
       
       Job Description:
       ${jobDescription}
@@ -64,19 +64,19 @@ export const analyzeResume = async (
 
     console.log(response);
 
-    const analysisResult = JSON.parse(response.text as string);
+    const parsedAiResponse = JSON.parse(response.text as string);
 
-    const newAnalysis = await Analysis.create({
+    const savedAnalysisRecord = await Analysis.create({
       user: req.user._id,
       resumeUrl: resumeUrl,
       jobDescription: jobDescription,
-      matchScore: analysisResult.matchScore,
-      matchingSkills: analysisResult.matchingSkills,
-      missingKeywords: analysisResult.missingKeywords,
-      suggestions: analysisResult.suggestions,
+      matchScore: parsedAiResponse.matchScore,
+      matchingSkills: parsedAiResponse.matchingSkills,
+      missingKeywords: parsedAiResponse.missingKeywords,
+      suggestions: parsedAiResponse.suggestions,
     });
 
-    res.status(201).json(newAnalysis);
+    res.status(201).json(savedAnalysisRecord);
   } catch (error: any) {
     console.error("Analysis Error:", error);
     res

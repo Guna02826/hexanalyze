@@ -6,8 +6,8 @@ import express, { json, Request, Response } from "express";
 
 import { connectDB } from "./src/config/db";
 
-import analysisRouter from "./src/routes/analysis.route";
-import authRouter from "./src/routes/auth.routes";
+import analysisRoutes from "./src/routes/analysis.routes";
+import authRoutes from "./src/routes/auth.routes";
 
 const app = express();
 
@@ -15,8 +15,8 @@ app.use(json());
 
 app.use(cors());
 
-app.use("/api/auth", authRouter);
-app.use("/api/analyze", analysisRouter);
+app.use("/api/auth", authRoutes);
+app.use("/api/analyze", analysisRoutes);
 
 app.get("/api/test", (req: Request, res: Response) => {
   res.send("The server is working.");

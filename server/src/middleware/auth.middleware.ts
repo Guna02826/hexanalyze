@@ -6,7 +6,7 @@ export interface AuthRequest extends Request {
   user?: IUser;
 }
 
-export const protect = async (
+export const requireAuth = async (
   req: AuthRequest,
   res: Response,
   next: NextFunction,
@@ -16,9 +16,9 @@ export const protect = async (
     req.headers.authorization.startsWith("Bearer")
   ) {
     try {
-      const token = req.headers.authorization.split(" ")[1];
-      const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
-      req.user = await User.findById((decoded as jwt.JwtPayload).id).select(
+      const authToken = req.headers.authorization.split(" ")[1];
+      const decodedToken = jwt.verify(authToken, process.env.JWT_SECRET as string);
+      req.user = await User.findById((decodedToken as jwt.JwtPayload).id).select(
         "-password",
       );
       next();

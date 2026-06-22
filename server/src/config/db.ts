@@ -6,9 +6,9 @@ export const connectDB = async (): Promise<void> => {
       throw new Error("MONGODB_URI is missing from your .env file!");
     }
 
-    const conn = await mongoose.connect(process.env.MONGODB_URI);
+    const dbConnection = await mongoose.connect(process.env.MONGODB_URI);
 
-    console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
+    console.log(`✅ MongoDB Connected: ${dbConnection.connection.host}`);
   } catch (error) {
     console.error(
       `❌ Error connecting to MongoDB: ${(error as Error).message}`,

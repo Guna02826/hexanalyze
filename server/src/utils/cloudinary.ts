@@ -7,9 +7,9 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-export const uploadToCloudinary = (fileBuffer: Buffer): Promise<string> => {
+export const uploadToCloudinary = (resumeFileBuffer: Buffer): Promise<string> => {
   return new Promise((resolve, reject) => {
-    const uploadStream = cloudinary.uploader.upload_stream(
+    const cloudinaryUploadStream = cloudinary.uploader.upload_stream(
       {
         folder: "resumes",
         resource_type: "auto",
@@ -25,6 +25,6 @@ export const uploadToCloudinary = (fileBuffer: Buffer): Promise<string> => {
       },
     );
 
-    streamifier.createReadStream(fileBuffer).pipe(uploadStream);
+    streamifier.createReadStream(resumeFileBuffer).pipe(cloudinaryUploadStream);
   });
 };
