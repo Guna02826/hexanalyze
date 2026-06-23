@@ -77,11 +77,11 @@ const AnalyzePage = () => {
             Error: {error}
           </div>
         )}
-        <label className="font-semibold text-lg text-slate-300">
+        <label className="font-semibold text-lg text-slate-700">
           Upload your Resume (PDF only):
         </label>
         <input
-          className="w-full text-slate-400 file:mr-4 file:py-3 file:px-6 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-500/10 file:text-indigo-400 hover:file:bg-indigo-500/20 cursor-pointer"
+          className="w-full text-slate-600 file:mr-4 file:py-3 file:px-6 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-600 hover:file:bg-indigo-100 cursor-pointer"
           type="file"
           accept=".pdf"
           onChange={(event) => {
@@ -92,7 +92,7 @@ const AnalyzePage = () => {
           disabled={isLoading}
         />
         <textarea
-          className="w-full min-h-[160px] p-4 bg-slate-950/50 border border-slate-800 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-slate-200 placeholder-slate-500"
+          className="w-full min-h-[160px] p-4 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-slate-800 placeholder-slate-400 shadow-sm"
           placeholder="Paste Job Description here..."
           name=""
           onChange={(event) => setJobDescription(event.target.value)}
