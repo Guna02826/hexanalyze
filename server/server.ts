@@ -15,9 +15,13 @@ app.use(json());
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: [
+      process.env.FRONTEND_URL || "",
+      "https://hexanalyze.netlify.app",
+      "http://localhost:5173"
+    ],
     credentials: true,
-  }),
+  })
 );
 
 
