@@ -24,10 +24,14 @@ app.use(
 app.use("/api/auth", authRoutes);
 app.use("/api/analyze", analysisRoutes);
 
+app.get("/api/health", (req: Request, res: Response) => {
+  res.status(200).json({ status: "ok" });
+});
+
 app.get("/api/test", (req: Request, res: Response) => {
   res.send("The server is working.");
 });
 
 connectDB();
-const PORT = process.env.PORT;
-app.listen(PORT, () => console.log("Server is running."));
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server is running on port ${PORT}.`));
