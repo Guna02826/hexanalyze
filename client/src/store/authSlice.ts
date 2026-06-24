@@ -28,6 +28,11 @@ const authSlice = createSlice({
       state.isAuthenticated = true;
     },
 
+    setAccessToken: (state, action: PayloadAction<string>) => {
+      state.token = action.payload;
+      state.isAuthenticated = true;
+    },
+
     logout: (state) => {
       state.user = null;
       state.token = null;
@@ -36,6 +41,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { setAuthCredentials, logout } = authSlice.actions;
+export const { setAuthCredentials, setAccessToken, logout } = authSlice.actions;
 
 export default authSlice.reducer;
