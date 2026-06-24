@@ -1,4 +1,3 @@
-import React from "react";
 import { useSelector } from "react-redux";
 import { Navigate, Link } from "react-router-dom";
 import { RootState } from "../store/store";
@@ -15,11 +14,11 @@ const ResultsPage = () => {
 
   return (
     <div className="max-w-5xl mx-auto p-6 mt-10">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">Your AI Analysis</h1>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Your AI Analysis</h1>
         <Link
           to="/"
-          className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg font-medium transition-colors"
+          className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg font-medium transition-colors w-full sm:w-auto text-center"
         >
           Analyze Another
         </Link>

@@ -7,7 +7,7 @@ jest.unstable_mockModule("@google/genai", () => {
     GoogleGenAI: jest.fn().mockImplementation(() => {
       return {
         models: {
-          generateContent: jest.fn().mockResolvedValue({
+          generateContent: jest.fn<any>().mockResolvedValue({
             text: JSON.stringify({
               matchScore: 85,
               matchingSkills: ["React"],
@@ -23,7 +23,7 @@ jest.unstable_mockModule("@google/genai", () => {
 
 jest.unstable_mockModule("../utils/cloudinary.js", () => {
   return {
-    uploadToCloudinary: jest.fn().mockResolvedValue("http://fake-image.com")
+    uploadToCloudinary: jest.fn<any>().mockResolvedValue("http://fake-image.com")
   };
 });
 

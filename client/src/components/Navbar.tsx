@@ -22,8 +22,8 @@ export default function Navbar() {
           {/* Logo */}
           <div className="flex items-center">
             <img src="/favicon.png" alt="Hexalyze Logo" className="h-8 w-8 mr-3" />
-            <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent mr-4">
-              Hexalyze - AI Job Matcher
+            <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent mr-4">
+              Hexalyze<span className="hidden sm:inline"> - AI Job Matcher</span>
             </h1>
           </div>
 
