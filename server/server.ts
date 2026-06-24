@@ -1,6 +1,8 @@
 import "dotenv/config";
 import cors from "cors";
 import express, { json, Request, Response } from "express";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 
 import { connectDB } from "./src/config/db.js";
 
@@ -11,6 +13,7 @@ import cookieParser from "cookie-parser";
 
 const app = express();
 
+app.use(helmet());
 app.use(json());
 app.use(cookieParser());
 
@@ -25,6 +28,13 @@ app.use(
   })
 );
 
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per window
+  message: "Too many requests from this IP, please try again later."
+});
+app.use("/api", limiter);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/analyze", analysisRoutes);
