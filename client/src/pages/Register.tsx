@@ -3,6 +3,13 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import { setAuthCredentials } from "../store/authSlice";
+import { z } from "zod";
+
+const registerSchema = z.object({
+  name: z.string().min(2, { message: "Name must be at least 2 characters" }),
+  email: z.string().email({ message: "Invalid email address" }),
+  password: z.string().min(8, { message: "Password must be at least 8 characters" }),
+});
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -16,6 +23,15 @@ const Register = () => {
   const handleRegister = async (event: React.FormEvent) => {
     event.preventDefault();
     setError("");
+
+    try {
+      registerSchema.parse({ name, email, password });
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        setError(err.errors[0].message);
+        return;
+      }
+    }
 
     try {
       // 1. Send registration request to your backend

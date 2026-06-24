@@ -3,6 +3,12 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setAuthCredentials } from "../store/authSlice";
+import { z } from "zod";
+
+const loginSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
+  password: z.string().min(1, { message: "Password is required" }),
+});
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -16,6 +22,16 @@ const Login = () => {
 
   const submitLogin = async (loginEmail: string, loginPassword: string) => {
     setError("");
+
+    try {
+      loginSchema.parse({ email: loginEmail, password: loginPassword });
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        setError(err.errors[0].message);
+        return;
+      }
+    }
+
     try {
       // 1. Send login request to your backend
       const response = await axios.post(
