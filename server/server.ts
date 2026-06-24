@@ -7,9 +7,12 @@ import { connectDB } from "./src/config/db.js";
 import analysisRoutes from "./src/routes/analysis.routes.js";
 import authRoutes from "./src/routes/auth.routes.js";
 
+import cookieParser from "cookie-parser";
+
 const app = express();
 
 app.use(json());
+app.use(cookieParser());
 
 app.use(
   cors({
