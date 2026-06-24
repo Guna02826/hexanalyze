@@ -84,3 +84,20 @@ export const analyzeResume = async (
       .json({ message: error.message || "Server Error during analysis" });
   }
 };
+
+export const getAnalysisHistory = async (req: AuthRequest, res: Response) => {
+  try {
+    const user = req.user;
+    if (!user) {
+      res.status(401).json({ message: "Not authorized" });
+      return;
+    }
+    const records = await Analysis.find({ user: user._id }).sort({
+      createdAt: -1,
+    });
+    res.status(200).json(records);
+  } catch (error) {
+    console.error((error as Error).message);
+    res.status(500).json((error as Error).message);
+  }
+};
