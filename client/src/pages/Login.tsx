@@ -14,6 +14,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   // useDispatch allows us to trigger our Redux actions
   const dispatch = useDispatch();
@@ -22,12 +23,14 @@ const Login = () => {
 
   const submitLogin = async (loginEmail: string, loginPassword: string) => {
     setError("");
+    setIsLoading(true);
 
     try {
       loginSchema.parse({ email: loginEmail, password: loginPassword });
     } catch (err) {
       if (err instanceof z.ZodError) {
-        setError(err.errors[0].message);
+        setError(err.issues[0].message);
+        setIsLoading(false);
         return;
       }
     }
@@ -40,6 +43,7 @@ const Login = () => {
           email: loginEmail,
           password: loginPassword,
         },
+        { withCredentials: true }
       );
 
       // 2. If successful, save the data to Redux using the action we created!
@@ -54,6 +58,7 @@ const Login = () => {
       navigate("/");
     } catch (err: any) {
       setError(err.response?.data?.message || "Login failed");
+      setIsLoading(false);
     }
   };
 
@@ -109,9 +114,10 @@ const Login = () => {
 
           <button
             type="submit"
-            className="w-full py-4 mt-2 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-400 hover:to-purple-400 text-white font-bold rounded-xl shadow-lg transition-all active:scale-[0.98]"
+            disabled={isLoading}
+            className="w-full py-4 mt-2 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-400 hover:to-purple-400 text-white font-bold rounded-xl shadow-lg transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            Log In
+            {isLoading ? "Logging in..." : "Log In"}
           </button>
 
           <div className="relative flex py-2 items-center">
@@ -123,9 +129,10 @@ const Login = () => {
           <button
             type="button"
             onClick={handleDemoLogin}
-            className="w-full py-4 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl border border-slate-700 shadow-lg transition-all active:scale-[0.98]"
+            disabled={isLoading}
+            className="w-full py-4 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl border border-slate-700 shadow-lg transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            Use Demo Account
+            {isLoading ? "Logging in..." : "Use Demo Account"}
           </button>
         </form>
         

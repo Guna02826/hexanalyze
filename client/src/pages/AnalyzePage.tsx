@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { z } from "zod";
 import { analyzeResume } from "../store/analysisSlice";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { z } from "zod";
 
 const analysisSchema = z.object({
   jobDescription: z.string().min(50, { message: "Job description must be at least 50 characters." }),
@@ -60,9 +60,9 @@ const AnalyzePage = () => {
 
     try {
       analysisSchema.parse({ jobDescription, file });
-    } catch (err) {
+    } catch (err : any) {
       if (err instanceof z.ZodError) {
-        setFormError(err.errors[0].message);
+        setFormError(err.issues[0].message);
         return;
       }
     }
@@ -116,6 +116,8 @@ const AnalyzePage = () => {
           name=""
           onChange={(event) => setJobDescription(event.target.value)}
           disabled={isLoading}
+          required
+          minLength={50}
         ></textarea>
 
         {isLoading && (

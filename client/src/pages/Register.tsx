@@ -16,6 +16,7 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -23,12 +24,14 @@ const Register = () => {
   const handleRegister = async (event: React.FormEvent) => {
     event.preventDefault();
     setError("");
+    setIsLoading(true);
 
     try {
       registerSchema.parse({ name, email, password });
     } catch (err) {
       if (err instanceof z.ZodError) {
-        setError(err.errors[0].message);
+        setError(err.issues[0].message);
+        setIsLoading(false);
         return;
       }
     }
@@ -42,6 +45,7 @@ const Register = () => {
           email,
           password,
         },
+        { withCredentials: true }
       );
 
       // 2. The backend responds with the user & token, so we save it directly to Redux!
@@ -60,6 +64,7 @@ const Register = () => {
       navigate("/");
     } catch (err: any) {
       setError(err.response?.data?.message || "Registration failed");
+      setIsLoading(false);
     }
   };
 
@@ -107,15 +112,16 @@ const Register = () => {
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               required
-              minLength={6}
+              minLength={8}
             />
           </div>
 
           <button
             type="submit"
-            className="w-full py-4 mt-2 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-400 hover:to-purple-400 text-white font-bold rounded-xl shadow-lg transition-all active:scale-[0.98]"
+            disabled={isLoading}
+            className="w-full py-4 mt-2 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-400 hover:to-purple-400 text-white font-bold rounded-xl shadow-lg transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            Sign Up
+            {isLoading ? "Signing up..." : "Sign Up"}
           </button>
         </form>
 
