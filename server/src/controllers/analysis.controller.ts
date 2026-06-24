@@ -3,6 +3,7 @@ import { Response } from "express";
 import { PDFParse } from "pdf-parse";
 import { AuthRequest } from "../middleware/auth.middleware.js";
 import Analysis from "../models/Analysis.model.js";
+import User from "../models/User.model.js";
 import { uploadToCloudinary } from "../utils/cloudinary.js";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
@@ -23,6 +24,29 @@ export const analyzeResume = async (
 
     if (!req.user) {
       return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    const now = new Date();
+    const lastAnalysisDate = user.lastAnalysisDate ? new Date(user.lastAnalysisDate) : new Date(0);
+
+    const isDifferentDay =
+      now.getUTCFullYear() !== lastAnalysisDate.getUTCFullYear() ||
+      now.getUTCMonth() !== lastAnalysisDate.getUTCMonth() ||
+      now.getUTCDate() !== lastAnalysisDate.getUTCDate();
+
+    if (isDifferentDay) {
+      user.dailyAnalysisCount = 0;
+      user.lastAnalysisDate = now;
+    }
+
+    const DAILY_LIMIT = 5;
+    if (user.dailyAnalysisCount >= DAILY_LIMIT) {
+      return res.status(429).json({ message: "Daily analysis limit reached. Please try again tomorrow." });
     }
 
     const pdfParser = new PDFParse(new Uint8Array(req.file.buffer));
@@ -75,6 +99,9 @@ export const analyzeResume = async (
       missingKeywords: parsedAiResponse.missingKeywords,
       suggestions: parsedAiResponse.suggestions,
     });
+
+    user.dailyAnalysisCount += 1;
+    await user.save();
 
     res.status(201).json(savedAnalysisRecord);
   } catch (error: any) {

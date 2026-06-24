@@ -5,6 +5,8 @@ export interface IUser extends Document {
   email: string;
   password: string;
   role: "user";
+  dailyAnalysisCount: number;
+  lastAnalysisDate: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -34,6 +36,14 @@ const userSchema = new Schema<IUser>(
     role: {
       type: String,
       default: "user",
+    },
+    dailyAnalysisCount: {
+      type: Number,
+      default: 0,
+    },
+    lastAnalysisDate: {
+      type: Date,
+      default: Date.now,
     },
   },
   {
