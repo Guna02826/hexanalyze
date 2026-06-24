@@ -2,12 +2,20 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { analyzeResume } from "../store/analysisSlice";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { z } from "zod";
+
+const analysisSchema = z.object({
+  jobDescription: z.string().min(50, { message: "Job description must be at least 50 characters." }),
+  file: z.custom<File>((v) => v instanceof File, { message: "Please upload a valid PDF document." })
+         .refine((f) => f.type === "application/pdf", "File must be a PDF document."),
+});
 
 const AnalyzePage = () => {
   // 1. Local state for our form inputs
   const [file, setFile] = useState<File | null>(null);
   const [jobDescription, setJobDescription] = useState("");
   const [loadingStep, setLoadingStep] = useState(0);
+  const [formError, setFormError] = useState("");
 
   const loadingMessages = [
     "Extracting text from your PDF...",
@@ -48,6 +56,17 @@ const AnalyzePage = () => {
   // 4. Handle Form Submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError("");
+
+    try {
+      analysisSchema.parse({ jobDescription, file });
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        setFormError(err.errors[0].message);
+        return;
+      }
+    }
+
     if (!file || !jobDescription) return;
 
     // Create the FormData object
@@ -72,9 +91,9 @@ const AnalyzePage = () => {
 
       {/* We will build the UI inside here next */}
       <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
-        {error && (
+        {(error || formError) && (
           <div className="p-4 mb-4 bg-red-100 border border-red-400 text-red-700 rounded-lg font-semibold text-center">
-            Error: {error}
+            Error: {formError || error}
           </div>
         )}
         <label className="font-semibold text-lg text-slate-700">
