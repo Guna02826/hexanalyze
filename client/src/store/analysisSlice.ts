@@ -59,6 +59,30 @@ export const analyzeResume = createAsyncThunk(
   },
 );
 
+export const fetchAnalysisHistory = createAsyncThunk(
+  "analysis/fetchAnalysisHistory",
+  async (_, { rejectWithValue, getState }) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.auth.token;
+      
+      const repsonse = await axios.get(
+        `${import.meta.env.VITE_SERVER_URL}/api/analyze/history`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      return repsonse.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to get analysis history",
+      );
+    }
+  },
+);
+
 // 5. Create the slice
 const analysisSlice = createSlice({
   name: "analysis",
@@ -74,6 +98,24 @@ const analysisSlice = createSlice({
     builder.addCase(analyzeResume.pending, (state) => {
       state.isLoading = true;
       state.error = null;
+    });
+
+    builder.addCase(fetchAnalysisHistory.pending, (state) => {
+      state.isLoading = true;
+      state.error = null;
+    });
+
+    builder.addCase(
+      fetchAnalysisHistory.fulfilled,
+      (state, action: PayloadAction<IAnalysis[]>) => {
+        state.isLoading = false;
+        state.history = action.payload;
+      },
+    );
+
+    builder.addCase(fetchAnalysisHistory.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload as string;
     });
 
     // When the request succeeds, stop loading and save the analysis data
