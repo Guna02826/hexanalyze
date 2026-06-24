@@ -1,7 +1,5 @@
+import "dotenv/config";
 import cors from "cors";
-import { config as _config } from "dotenv";
-_config({ quiet: true });
-
 import express, { json, Request, Response } from "express";
 
 import { connectDB } from "./src/config/db.js";
