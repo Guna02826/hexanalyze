@@ -78,8 +78,19 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-950 p-4">
-      <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl shadow-indigo-500/10">
+    <div className="min-h-screen bg-slate-950 flex flex-col">
+      {/* Simple Branding Header */}
+      <div className="w-full p-6 flex justify-center sm:justify-start">
+        <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
+          <img src="/favicon.png" alt="Hexalyze Logo" className="h-8 w-8 mr-3" />
+          <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">
+            Hexalyze
+          </h1>
+        </Link>
+      </div>
+
+      <div className="flex-1 flex items-center justify-center p-4 pb-20">
+        <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl shadow-indigo-500/10">
         <h2 className="text-3xl font-bold text-center text-blue-500 mb-8">
           Welcome Back
         </h2>
@@ -143,6 +154,7 @@ const Login = () => {
             Register here
           </Link>
         </p>
+      </div>
       </div>
     </div>
   );
