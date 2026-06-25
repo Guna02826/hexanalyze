@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { setAuthCredentials } from "../store/authSlice";
 import { z } from "zod";
 
@@ -135,7 +135,14 @@ const Login = () => {
             {isLoading ? "Logging in..." : "Use Demo Account"}
           </button>
         </form>
-        
+
+        {/* A link to switch to the register page */}
+        <p className="text-slate-400 text-center mt-6">
+          Don't have an account?{" "}
+          <Link to="/register" className="text-blue-500 hover:underline">
+            Register here
+          </Link>
+        </p>
       </div>
     </div>
   );
