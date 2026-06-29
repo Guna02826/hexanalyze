@@ -4,6 +4,7 @@ import { PDFParse } from "pdf-parse";
 import { AuthRequest } from "../middleware/auth.middleware.js";
 import Analysis from "../models/Analysis.model.js";
 import User from "../models/User.model.js";
+import { z } from "zod";
 import { uploadToCloudinary } from "../utils/cloudinary.js";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
@@ -86,18 +87,34 @@ export const analyzeResume = async (
       },
     });
 
-    console.log(response);
+    const GeminiResponseSchema = z.object({
+      matchScore: z.number().min(0).max(100),
+      matchingSkills: z.array(z.string()),
+      missingKeywords: z.array(z.string()),
+      suggestions: z.array(z.string()),
+    });
 
-    const parsedAiResponse = JSON.parse(response.text as string);
+    let rawAiResponse;
+    try {
+      rawAiResponse = JSON.parse(response.text as string);
+    } catch (e) {
+      return res.status(500).json({ message: "AI returned invalid JSON formatting." });
+    }
+
+    const parsedAiResponse = GeminiResponseSchema.safeParse(rawAiResponse);
+
+    if (!parsedAiResponse.success) {
+      return res.status(500).json({ message: "AI response was missing required fields." });
+    }
 
     const savedAnalysisRecord = await Analysis.create({
       user: req.user._id,
       resumeUrl: resumeUrl,
       jobDescription: jobDescription,
-      matchScore: parsedAiResponse.matchScore,
-      matchingSkills: parsedAiResponse.matchingSkills,
-      missingKeywords: parsedAiResponse.missingKeywords,
-      suggestions: parsedAiResponse.suggestions,
+      matchScore: parsedAiResponse.data.matchScore,
+      matchingSkills: parsedAiResponse.data.matchingSkills,
+      missingKeywords: parsedAiResponse.data.missingKeywords,
+      suggestions: parsedAiResponse.data.suggestions,
     });
 
     user.dailyAnalysisCount += 1;
@@ -108,7 +125,7 @@ export const analyzeResume = async (
     console.error("Analysis Error:", error);
     res
       .status(500)
-      .json({ message: error.message || "Server Error during analysis" });
+      .json({ message: "Server Error during analysis" });
   }
 };
 
@@ -124,7 +141,7 @@ export const getAnalysisHistory = async (req: AuthRequest, res: Response) => {
     });
     res.status(200).json(records);
   } catch (error) {
-    console.error((error as Error).message);
-    res.status(500).json((error as Error).message);
+    console.error(error);
+    res.status(500).json({ message: "Failed to fetch history" });
   }
 };

@@ -17,7 +17,7 @@ export const requireAuth = async (
   ) {
     try {
       const authToken = req.headers.authorization.split(" ")[1];
-      const decodedToken = jwt.verify(authToken, process.env.JWT_SECRET as string);
+      const decodedToken = jwt.verify(authToken, process.env.JWT_ACCESS_SECRET as string);
       req.user = await User.findById((decodedToken as jwt.JwtPayload).id).select(
         "-password",
       );
@@ -26,8 +26,7 @@ export const requireAuth = async (
       console.error((error as Error).message);
       res.status(401).json({ message: "Not authorized, token failed" });
     }
-  }
-  if (
+  } else if (
     !req.headers.authorization ||
     !req.headers.authorization.startsWith("Bearer")
   ) {

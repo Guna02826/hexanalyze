@@ -90,7 +90,7 @@ export const refreshAccessToken = async (req: Request, res: Response): Promise<v
   }
 
   try {
-    const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET as string) as { id: string };
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET as string) as { id: string };
     const user = await User.findById(decoded.id).select("-password");
 
     if (!user) {
