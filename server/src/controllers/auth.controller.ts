@@ -9,7 +9,7 @@ const setRefreshTokenCookie = (res: Response, refreshToken: string) => {
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
 };
@@ -18,57 +18,67 @@ export const registerUser = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
-  const { name, email, password } = req.body;
+  try {
+    const { name, email, password } = req.body;
 
-  const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email });
 
-  if (existingUser) {
-    res.status(400).json({ message: "User already Exists!" });
-    return;
-  } else {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUserPayload = { name: name, email: email, password: hashedPassword };
-    const user = await User.create(newUserPayload);
-    
-    const accessToken = generateAccessToken(user.id);
-    const refreshToken = generateRefreshToken(user.id);
-    
-    setRefreshTokenCookie(res, refreshToken);
+    if (existingUser) {
+      res.status(400).json({ message: "User already Exists!" });
+      return;
+    } else {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const newUserPayload = { name: name, email: email, password: hashedPassword };
+      const user = await User.create(newUserPayload);
+      
+      const accessToken = generateAccessToken(user.id);
+      const refreshToken = generateRefreshToken(user.id);
+      
+      setRefreshTokenCookie(res, refreshToken);
 
-    res.status(201).json({
-      _id: user._id,
-      name: name,
-      email: email,
-      token: accessToken,
-    });
+      res.status(201).json({
+        _id: user._id,
+        name: name,
+        email: email,
+        token: accessToken,
+      });
+    }
+  } catch (error: any) {
+    console.error("Register Error:", error);
+    res.status(500).json({ message: "Internal server error during registration", error: error.message });
   }
 };
 
 export const loginUser = async (req: Request, res: Response): Promise<void> => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email });
 
-  if (!existingUser) {
-    res.status(400).json({ message: "Invalid Email!" });
-  } else {
-    const isPasswordValid = await bcrypt.compare(password, existingUser.password);
-
-    if (isPasswordValid) {
-      const accessToken = generateAccessToken(existingUser.id);
-      const refreshToken = generateRefreshToken(existingUser.id);
-      
-      setRefreshTokenCookie(res, refreshToken);
-
-      res.status(200).json({
-        _id: existingUser.id,
-        name: existingUser.name,
-        email: existingUser.email,
-        token: accessToken,
-      });
+    if (!existingUser) {
+      res.status(400).json({ message: "Invalid Email!" });
     } else {
-      res.status(400).json({ message: "Invalid Credentials!" });
+      const isPasswordValid = await bcrypt.compare(password, existingUser.password);
+
+      if (isPasswordValid) {
+        const accessToken = generateAccessToken(existingUser.id);
+        const refreshToken = generateRefreshToken(existingUser.id);
+        
+        setRefreshTokenCookie(res, refreshToken);
+
+        res.status(200).json({
+          _id: existingUser.id,
+          name: existingUser.name,
+          email: existingUser.email,
+          token: accessToken,
+        });
+      } else {
+        res.status(400).json({ message: "Invalid Credentials!" });
+      }
     }
+  } catch (error: any) {
+    console.error("Login Error:", error);
+    res.status(500).json({ message: "Internal server error during login", error: error.message });
   }
 };
 
@@ -109,7 +119,7 @@ export const logoutUser = async (req: Request, res: Response): Promise<void> => 
   res.clearCookie("refreshToken", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   });
   res.status(200).json({ message: "Logged out successfully" });
 };
